@@ -342,6 +342,7 @@
         }
       }).on('click', function(){
         if (lockcell) {
+          d3.select(lockcell.nextSibling).transition().duration(500).attr('transform', "scale(1)").style('opacity\'', 1);
           d3.select(lockcell).attr('fill', function(it){
             return this$.colors[it.party];
           }).transition().duration(500).attr('transform', "scale(1)").attr('stroke', 'none').style('opacity', function(it){
@@ -356,6 +357,7 @@
           return lockcell = null;
         }
         lockcell = d3.event.target;
+        d3.select(d3.event.target.nextSibling).transition().duration(500).attr('transform', "scale(0.8)").style('opacity', 0.4);
         return d3.select(d3.event.target).attr('fill', function(it){
           return "url(#defs_h" + it.idx + ")";
         }).transition().duration(500).attr('transform', "scale(2)").attr('stroke', function(it){
@@ -438,12 +440,18 @@
       });
     });
   });
-  function curry$(f, args){
-    return f.length > 1 ? function(){
-      var params = args ? args.concat() : [];
-      return params.push.apply(params, arguments) < f.length && arguments.length ?
-        curry$.call(this, f, params) : f.apply(this, params);
-    } : f;
+  function curry$(f, bound){
+    var context,
+    _curry = function(args) {
+      return f.length > 1 ? function(){
+        var params = args ? args.concat() : [];
+        context = bound ? context || this : this;
+        return params.push.apply(params, arguments) <
+            f.length && arguments.length ?
+          _curry.call(context, params) : f.apply(context, params);
+      } : f;
+    };
+    return _curry();
   }
   function import$(obj, src){
     var own = {}.hasOwnProperty;

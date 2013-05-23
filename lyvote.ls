@@ -195,6 +195,9 @@
        .style \opacity ~> if it.vote == 0 then 0.3 else 1
     .on \click ~>
        if lockcell
+         d3.select lockcell.nextSibling .transition! .duration 500
+           .attr \transform "scale(1)"
+           .style \opacity' 1
          d3.select lockcell .attr \fill ~> @colors[it.party]
            .transition! .duration 500
            .attr \transform "scale(1)"
@@ -203,6 +206,9 @@
        if lockcell == d3.event.target
          return lockcell := null
        lockcell := d3.event.target
+       d3.select d3.event.target.nextSibling .transition! .duration(500)
+         .attr \transform "scale(0.8)"
+         .style \opacity 0.4
        d3.select d3.event.target .attr \fill -> "url(\#defs_h#{it.idx})"
          .transition! .duration 500
          .attr \transform "scale(2)"
